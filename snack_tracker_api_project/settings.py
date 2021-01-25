@@ -16,7 +16,6 @@ from django.core.management.utils import get_random_secret_key
 
 
 env = environ.Env(
-    # We are doing a default setting here because even if something happens to the .env, we set this to false to make sure Django dosn't start pusging out to much information on the error pages (you know, the good stuff we have been using to debug out pages until revently)
     DEBUG=(bool, False),
 )
 
@@ -151,5 +150,6 @@ REST_FRAMEWORK = {
     )
 }
 
-CORS_ALLOW_ALL_ORIGINS=True
+CORS_ALLOWED_ORIGINS=tuple(env.list('CORS_ALLOWED_ORIGINS', default=[]))
+CORS_ALLOW_ALL_ORIGINS=env.bool('CORS_ALLOW_ALL_ORIGINS', default=0)
 
