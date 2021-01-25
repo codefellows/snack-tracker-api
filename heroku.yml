@@ -3,8 +3,6 @@ build:
     web: Dockerfile
 release:
   image: web
-  command:
-    - python manage.py collectstatic --noinput
 run:
   web: gunicorn snack_tracker_api_project.wsgi
 
