@@ -1,18 +1,13 @@
 # Build Steps
 
 > poetry init -n
-
 > poetry add django djangorestframework djangorestframework-simplejwt gunicorn django-environ psycopg2-binary django-cors-headers whitenoise
-
 > poetry add --dev black flake8
-
-> poetry shell  
-
+> poetry shell
 > django-admin startproject snack_tracker_api_project .
-
 > touch `heroku.yml`
 
-```
+```yaml
 build:
   docker:
     web: Dockerfile
@@ -22,11 +17,11 @@ run:
   web: gunicorn snack_tracker_api_project.wsgi
 ```
 
-- Make sure **.wsgi line matches your project.
+- **NOTE:** Make sure **.wsgi line matches your project.
 
 > touch Dockerfile
 
-```
+```Dockerfile
 # Python version
 FROM python:3
 
@@ -49,7 +44,7 @@ COPY . /code/
 
 Should look something close to ...
 
-```
+```text
 asgiref==3.3.1; python_version >= "3.6"
 django-cors-headers==3.6.0; python_version >= "3.6"
 django-environ==0.4.5
@@ -64,9 +59,9 @@ sqlparse==0.4.1; python_version >= "3.6"
 whitenoise==5.2.0; python_version >= "3.5" and python_version < "4"
 ```
 
-### project urls.py
+## project urls.py
 
-```
+```python
 from django.contrib import admin
 from django.urls import include, path
 
@@ -84,9 +79,11 @@ urlpatterns = [
 ]
 ```
 
+## settings.py
+
 ### Installed Apps
 
-```
+```python
 INSTALLED_APPS = [
 
     ...
@@ -97,7 +94,7 @@ INSTALLED_APPS = [
 
     # local
     'snacks',
-    
+
 ]
 ```
 
@@ -105,14 +102,14 @@ INSTALLED_APPS = [
 
 Below SessionMiddleware and CommonMiddleware
 
-```
+```python
 'corsheaders.middleware.CorsMiddleware',
-'whitenoise.middleware.WhiteNoiseMiddleware',     
+'whitenoise.middleware.WhiteNoiseMiddleware',
 ```
 
-## REST_FRAMEWORK
+### REST_FRAMEWORK
 
-```
+```python
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.IsAuthenticated',
@@ -127,13 +124,14 @@ REST_FRAMEWORK = {
 
 ### Cors Origins
 
-```
-CORS_ALLOW_ALL_ORIGINS=True
+```python
+CORS_ALLOWED_ORIGINS=tuple(env.list('CORS_ALLOWED_ORIGINS', default=[]))
+CORS_ALLOW_ALL_ORIGINS=env.bool('CORS_ALLOW_ALL_ORIGINS', default=0)
 ```
 
 ### Database
 
-```
+```python
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
@@ -148,7 +146,7 @@ DATABASES = {
 
 ### Env stuff
 
-```
+```python
 import environ
 
 env = environ.Env(
@@ -165,11 +163,11 @@ DEBUG = env.bool('DEBUG')
 ALLOWED_HOSTS = tuple(env.list('ALLOWED_HOSTS'))
 ```
 
-### .env file
+## .env file
 
 **Note** It goes in project folder NOT root.
 
-```
+```text
 DEBUG=on
 SECRET_KEY=your_secret_key
 DATABASE_NAME=your_database_name
@@ -178,8 +176,10 @@ DATABASE_PASSWORD=your_database_password
 DATABASE_HOST=your_database_host
 DATABASE_PORT=your_database_port
 ALLOWED_HOSTS=one_approved_host,another_approved_host
+CORS_ALLOWED_ORIGINS=your_origin,your_other_origin
+CORS_ALLOW_ALL_ORIGINS=1_OR_0
 ```
 
-### Snacks app
+## Snacks Client
 
 Copy in Snacks app from previous snacks-api lab
