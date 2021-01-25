@@ -18,7 +18,6 @@ from django.core.management.utils import get_random_secret_key
 env = environ.Env(
     # We are doing a default setting here because even if something happens to the .env, we set this to false to make sure Django dosn't start pusging out to much information on the error pages (you know, the good stuff we have been using to debug out pages until revently)
     DEBUG=(bool, False),
-    SECRET_KEY=(str, get_random_secret_key()),
 )
 
 # read .env file
@@ -29,9 +28,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 
 # Read from Environment
-SECRET_KEY = env.str('SECRET_KEY')
+SECRET_KEY = env.str('SECRET_KEY', default=get_random_secret_key())
 DEBUG = env.bool('DEBUG')
-ALLOWED_HOSTS = tuple(env.list('ALLOWED_HOSTS'))
+ALLOWED_HOSTS = tuple(env.list('ALLOWED_HOSTS', default=[]))
 
 
 
@@ -92,11 +91,11 @@ WSGI_APPLICATION = 'snack_tracker_api_project.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': env('DATABASE_NAME'),
-        'USER': env('DATABASE_USER'),
-        'PASSWORD':  env('DATABASE_PASSWORD'),
-        'HOST':  env('DATABASE_HOST'),
-        'PORT':  env('DATABASE_PORT')
+        'NAME': env('DATABASE_NAME', default=''),
+        'USER': env('DATABASE_USER', default=''),
+        'PASSWORD':  env('DATABASE_PASSWORD', default=''),
+        'HOST':  env('DATABASE_HOST', default=''),
+        'PORT':  env('DATABASE_PORT', default=0)
     }
 }
 
